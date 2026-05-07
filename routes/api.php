@@ -14,6 +14,7 @@ Route::get('/products/{id}',  [ProductController::class, 'show']);
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user',      [AuthController::class, 'getUser']);
 
     Route::post('/products',         [ProductController::class, 'store']);
     Route::put('/products/{id}',     [ProductController::class, 'update']);
