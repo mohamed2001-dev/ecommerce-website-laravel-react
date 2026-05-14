@@ -1,11 +1,12 @@
+import { Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
+export default function ProtectedRoute({ children }) {
+    const { token } = useSelector((state) => state.auth);
 
-function ProtectedRoute() {
-  return (
-    <div>
-        protection
-    </div>
-  )
+    if (!token) {
+        return <Navigate to="/admin/login" />;
+    }
+
+    return children;
 }
-
-export default ProtectedRoute

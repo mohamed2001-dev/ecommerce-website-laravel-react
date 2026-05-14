@@ -1,9 +1,11 @@
 
+import ProductsList from "./products/ProductsList"
+
 
 function Dashboard() {
   return (
     <div>
-        dashboard
+        <ProductsList/>
     </div>
   )
 }
