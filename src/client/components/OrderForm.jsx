@@ -128,9 +128,9 @@ export default function OrderForm({ onClose }) {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3 bg-black text-white text-sm tracking-wide hover:bg-white hover:text-black border-2 border-black transition-all duration-300 disabled:opacity-50"
+                        className="w-full py-3 bg-green-600 text-white text-sm tracking-wide hover:bg-white hover:text-green-700 border-2 border-green-700 transition-all duration-300 disabled:opacity-50"
                     >
-                        {loading ? 'PROCESSING...' : `PLACE ORDER • $${total.toFixed(2)}`}
+                        {loading ? 'PROCESSING...' : `Order Now • $${total.toFixed(2)}`}
                     </button>
                 </form>
             </div>

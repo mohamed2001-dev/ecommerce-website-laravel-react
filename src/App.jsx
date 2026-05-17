@@ -11,7 +11,6 @@ import ProductUpdate from "./admin/pages/products/ProductUpdate"
 import ProtectedRoute from "./admin/components/ProtectedRoute"
 import AdminLayout from "./admin/layouts/AdminLayout"
 import CategoryList from "./admin/pages/categories/CategoriesList"
-import CategoryCreate from "./admin/pages/categories/CategoryCreate"
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUser } from './store/slices/authSlice';
@@ -19,6 +18,9 @@ import Cart from "./client/pages/Cart"
 import Men from "./client/pages/Men"
 import Women from "./client/pages/Women"
 import Pack from "./client/pages/Pack"
+import ProductList from "./admin/pages/products/ProductsList"
+import Shop from "./client/pages/Shop"
+import Product from "./client/pages/Product"
 
 
 function App() {
@@ -44,6 +46,8 @@ function App() {
                 <Route path="/pack"   element={<Pack />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/cart" element={<Cart />} />
+                <Route path="/shop" element={<Shop />} />
+                <Route path="/product/:id" element={<Product />} />
             </Route>
 
             {/* Admin Public Routes */}
@@ -57,8 +61,9 @@ function App() {
                 </ProtectedRoute>
             }>
                 <Route index          element={<Dashboard />} />
+                <Route path="products"           element={<ProductList />} />
                 <Route path="categories"            element={<CategoryList />} />
-                <Route path="categories/create"       element={<CategoryCreate />} />
+                {/* <Route path="categories/create"       element={<CategoryCreate />} /> */}
                 <Route path="products/create"       element={<ProductCreate />} />
                 <Route path="products/edit/:id"     element={<ProductUpdate />} />
             </Route>

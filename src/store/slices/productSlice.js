@@ -90,8 +90,18 @@ const productSlice = createSlice({
             })
 
             // Fetch One
+            .addCase(fetchProduct.pending, (state) => {
+                state.loading = true;
+                state.errors = null;
+            })
             .addCase(fetchProduct.fulfilled, (state, action) => {
-                state.product = action.payload.data;
+                state.loading = false;
+                state.product = action.payload;  // ← Store the product here
+                state.errors = null;
+            })
+            .addCase(fetchProduct.rejected, (state, action) => {
+                state.loading = false;
+                state.errors = action.payload;
             })
 
             // Create

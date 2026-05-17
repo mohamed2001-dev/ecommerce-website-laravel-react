@@ -185,7 +185,7 @@ export default function Cart() {
                                 onClick={() => setShowOrderForm(true)}
                                 className="w-full py-3.5 bg-green-600 text-white text-sm tracking-wide hover:bg-white hover:text-green-800 border-2 border-green-600 transition-all duration-300"
                             >
-                                CHECKOUT
+                                Order Now
                             </button>
 
                             {/* Features */}
