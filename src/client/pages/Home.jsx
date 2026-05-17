@@ -17,9 +17,11 @@ import smallMobileBannerImageTwo from "../../images/small-mobile-couvert-two.png
 import { imageUrl } from "../../helpers/imageUrl";
 import { addToCart } from "../../store/slices/cartSlice";
 import Features from "../components/Features";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
     const dispatch = useDispatch();
+    const navigate = useNavigate()
 
     const banners = [bannerImageOne, bannerImageTwo];
     const [currentBanner, setCurrentBanner] = useState(0);
@@ -175,7 +177,8 @@ function Home() {
                 </div>
 
                 {/* Products Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                >
                     {products
                         .filter((product) =>
                             selectedCategory
@@ -185,7 +188,8 @@ function Home() {
                         .map((product) => (
                             <div
                                 key={product.id}
-                                className="group relative bg-white border border-gray-100 hover:border-black transition-all duration-500 hover:shadow-2xl"
+                                className="group relative bg-white border border-gray-100 hover:border-black transition-all duration-500 hover:shadow-2xl cursor-pointer"
+                                onClick={()=> navigate(`/product/${product.id}`)}
                             >
                                 {/* Product Badge */}
                                 <div className="absolute top-4 left-4 z-10">

@@ -2,10 +2,13 @@ import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { clearCart } from '../../store/slices/cartSlice';
 
-export default function OrderForm({ onClose }) {
+export default function OrderForm({ product , onClose }) {
     const dispatch = useDispatch();
     const { items } = useSelector((state) => state.cart);
-    const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    // Determine order items (either single product or cart items)
+    const orderItems = product ? [product] : items;
+    const total = orderItems.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
+
 
     const [form, setForm] = useState({
         full_name: '',
@@ -61,24 +64,14 @@ export default function OrderForm({ onClose }) {
     return (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4 py-8">
             <div className="bg-white max-w-md w-full max-h-[90vh] overflow-y-auto">
-                <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                <div className="p-4 border-b border-gray-100 flex justify-between items-center">
                     <h2 className="text-lg font-light text-black">Complete Order</h2>
                     <button onClick={onClose} className="text-gray-400 hover:text-black text-xl">✕</button>
                 </div>
-
-                <div className="p-6 border-b border-gray-100 bg-gray-50/30">
-                    <p className="text-xs text-gray-400 mb-3">Order Summary</p>
-                    {items.map((item) => (
-                        <div key={item.id} className="flex justify-between text-sm mb-2">
-                            <span className="text-gray-600">{item.title} x{item.quantity}</span>
-                            <span className="text-black">${(item.price * item.quantity).toFixed(2)}</span>
-                        </div>
-                    ))}
-                    <div className="border-t border-gray-200 pt-3 mt-3 flex justify-between">
+                    <div className="border-t border-gray-200 pt-3 mt-3 flex justify-around">
                         <span className="text-black font-semibold">Total</span>
                         <span className="text-xl font-bold text-black">${total.toFixed(2)}</span>
                     </div>
-                </div>
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
                     <input

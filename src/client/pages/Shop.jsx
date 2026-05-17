@@ -1,27 +1,49 @@
-// pages/Shop.jsx
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import ProductsGrid from '../../client/components/ProductsGrid';
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProducts } from "../../store/slices/productSlice";
+import { addToCart } from "../../store/slices/cartSlice";
+import { imageUrl } from "../../helpers/imageUrl";
+import { Link } from "react-router-dom";
+import OrderForm from "../components/OrderForm";
 
-export default function Shop() {
-    const { products } = useSelector((state) => state.products);
-    const { categories } = useSelector((state) => state.categories);
+function Shop() {
+    const { products, loading } = useSelector((state) => state.products);
+    const dispatch = useDispatch();
+    const [showOrderForm, setShowOrderForm] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
-    const [selectedCategory, setSelectedCategory] = useState('all');
-    const [sortBy, setSortBy] = useState('default');
+    useEffect(() => {
+        dispatch(fetchProducts());
+    }, [dispatch]);
 
-    // Filter products
-    const filteredProducts = products.filter(product => {
-        if (selectedCategory === 'all') return true;
-        return product.category_id === parseInt(selectedCategory);
-    });
+    const handleOrderNow = (product) => {
+        setSelectedProduct(product);
+        setShowOrderForm(true);
+    };
 
-    // Sort products
-    const sortedProducts = [...filteredProducts].sort((a, b) => {
-        if (sortBy === 'price-asc') return a.price - b.price;
-        if (sortBy === 'price-desc') return b.price - a.price;
-        return 0;
-    });
+    if (loading) {
+        return (
+            <div className="bg-white min-h-screen pt-32 pb-20">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {[1, 2, 3, 4, 5, 6].map((i) => (
+                            <div key={i} className="bg-gray-100 animate-pulse h-[500px]"></div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!products || products.length === 0) {
+        return (
+            <div className="bg-white min-h-screen pt-32 pb-20 flex items-center justify-center">
+                <div className="text-center">
+                    <p className="text-gray-400 text-lg">No products found</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-white min-h-screen pt-32 pb-20">
@@ -36,61 +58,104 @@ export default function Shop() {
                     </p>
                 </div>
 
-                {/* Filters Bar */}
-                <div className="flex flex-col md:flex-row justify-between items-center mb-8 pb-4 border-b border-gray-100">
-                    <div className="flex flex-wrap gap-2 mb-4 md:mb-0">
-                        <button
-                            onClick={() => setSelectedCategory('all')}
-                            className={`px-4 py-1.5 text-xs tracking-wide transition-all duration-300 ${
-                                selectedCategory === 'all'
-                                    ? 'bg-black text-white'
-                                    : 'bg-transparent text-black border border-gray-200 hover:border-black'
-                            }`}
+                {/* Products Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {products.map((product) => (
+                        <div
+                            key={product.id}
+                            className="group relative bg-white border border-gray-100 hover:border-black transition-all duration-500 hover:shadow-2xl"
                         >
-                            ALL
-                        </button>
-                        {categories.map(cat => (
-                            <button
-                                key={cat.id}
-                                onClick={() => setSelectedCategory(cat.id)}
-                                className={`px-4 py-1.5 text-xs tracking-wide transition-all duration-300 ${
-                                    selectedCategory === cat.id
-                                        ? 'bg-black text-white'
-                                        : 'bg-transparent text-black border border-gray-200 hover:border-black'
-                                }`}
-                            >
-                                {cat.name.toUpperCase()}
-                            </button>
-                        ))}
-                    </div>
+                            {/* Product Badge */}
+                            <div className="absolute top-4 left-4 z-10">
+                                <span className="text-[10px] tracking-[0.15em] uppercase bg-black text-white px-3 py-1">
+                                    New
+                                </span>
+                            </div>
 
-                    <div className="flex items-center gap-3">
-                        <span className="text-[10px] tracking-[0.2em] text-gray-400">SORT BY</span>
-                        <select
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
-                            className="px-3 py-1.5 border border-gray-200 focus:border-black outline-none text-sm bg-white"
-                        >
-                            <option value="default">Default</option>
-                            <option value="price-asc">Price: Low to High</option>
-                            <option value="price-desc">Price: High to Low</option>
-                        </select>
-                    </div>
+                            {/* Image Container */}
+                            <Link to={`/product/${product.id}`}>
+                                <div className="relative overflow-hidden bg-gray-50">
+                                    <img
+                                        src={imageUrl(product.image)}
+                                        alt={product.title}
+                                        className="w-full h-[380px] object-cover transition-all duration-700 group-hover:scale-105"
+                                        loading="lazy"
+                                    />
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-500"></div>
+                                </div>
+                            </Link>
+
+                            {/* Content */}
+                            <div className="p-5">
+                                <Link to={`/product/${product.id}`}>
+                                    <h3 className="text-lg font-semibold text-black mb-1 tracking-tight line-clamp-1 hover:opacity-70 transition">
+                                        {product.title}
+                                    </h3>
+                                </Link>
+                                <p className="text-xs text-gray-400 uppercase mb-2">
+                                    {product.category?.name || 'Eau de Parfum'}
+                                </p>
+                                <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-2">
+                                    {product.description}
+                                </p>
+
+                                {/* Price */}
+                                <div className="mb-4">
+                                    <span className="text-2xl font-bold text-black">
+                                        ${product.price}
+                                    </span>
+                                    <span className="text-xs text-gray-400 ml-1">USD</span>
+                                </div>
+
+                                {/* Buttons */}
+                                <div className="flex gap-3">
+                                    {/* Add to Cart Button */}
+                                    <button
+                                        onClick={() => dispatch(addToCart({ ...product, quantity: 1 }))}
+                                        className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-black text-white text-xs tracking-wide hover:bg-white hover:text-black border-2 border-black transition-all duration-300 font-medium"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6M12 18v3" />
+                                        </svg>
+                                        ADD TO CART
+                                    </button>
+
+                                    {/* Order Now Button */}
+                                    <button
+                                        onClick={() => handleOrderNow(product)}
+                                        className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white text-xs tracking-wide hover:bg-white hover:text-green-600 border-2 border-green-700 transition-all duration-300 font-medium"
+                                    >
+                                        ORDER NOW
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
-                {/* Products Grid */}
-                <ProductsGrid
-                    products={sortedProducts}
-                    columns={3}
-                />
-
-                {/* Results Count */}
-                <div className="text-center mt-8">
+                {/* Products Count */}
+                <div className="text-center mt-12 pt-8 border-t border-gray-100">
                     <p className="text-xs text-gray-400">
-                        Showing {sortedProducts.length} of {filteredProducts.length} products
+                        Showing {products.length} products
                     </p>
                 </div>
             </div>
+
+            {/* Order Form Modal */}
+            {showOrderForm && selectedProduct && (
+                <OrderForm
+                    product={selectedProduct}
+                    onClose={() => {
+                        setShowOrderForm(false);
+                        setSelectedProduct(null);
+                    }}
+                />
+            )}
         </div>
     );
 }
+
+export default Shop;

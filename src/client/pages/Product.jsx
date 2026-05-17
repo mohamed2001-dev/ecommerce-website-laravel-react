@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchProduct } from '../../store/slices/productSlice';
 import { addToCart } from '../../store/slices/cartSlice';
 import { imageUrl } from '../../helpers/imageUrl';
-import { FaShoppingBag, FaHeart, FaShare, FaTruck, FaShieldAlt, FaUndo } from 'react-icons/fa';
+import { FaHeart, FaShare, FaTruck, FaShieldAlt, FaUndo } from 'react-icons/fa';
+import OrderForm from '../components/OrderForm';
 
 export default function Product() {
     const { id } = useParams();
@@ -14,6 +15,8 @@ export default function Product() {
     const { product, loading } = useSelector((state) => state.products);
     const [quantity, setQuantity] = useState(1);
     const [selectedTab, setSelectedTab] = useState('description');
+    const [showOrderForm, setShowOrderForm] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
     useEffect(() => {
         dispatch(fetchProduct(id));
@@ -22,6 +25,17 @@ export default function Product() {
 
     const handleAddToCart = () => {
         dispatch(addToCart({ ...product, quantity }));
+        // Optional: Show success message
+    };
+
+    const handleOrderNow = () => {
+        // Create order item with selected quantity
+        const orderItem = {
+            ...product,
+            quantity: quantity
+        };
+        setSelectedProduct(orderItem);
+        setShowOrderForm(true);
     };
 
     if (loading) {
@@ -135,14 +149,38 @@ export default function Product() {
                             </div>
                         </div>
 
-                        {/* Add to Cart Button */}
-                        <button
-                            onClick={handleAddToCart}
-                            className="w-full py-4 bg-black text-white text-sm tracking-wide hover:bg-white hover:text-black border-2 border-black transition-all duration-300 mb-6 flex items-center justify-center gap-2"
-                        >
-                            <FaShoppingBag size={16} />
-                            ADD TO CART
-                        </button>
+                        {/* Subtotal display (optional) */}
+                        <div className="mb-4 text-right">
+                            <span className="text-sm text-gray-500">Subtotal: </span>
+                            <span className="text-lg font-bold text-black">
+                                ${(product.price * quantity).toFixed(2)}
+                            </span>
+                        </div>
+
+                        {/* Professional Buttons */}
+                        <div className="flex gap-3 mb-6">
+                            {/* Add to Cart Button */}
+                            <button
+                                onClick={handleAddToCart}
+                                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-black text-white text-xs tracking-wide hover:bg-white hover:text-black border-2 border-black transition-all duration-300 font-medium"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6M12 18v3" />
+                                </svg>
+                                ADD TO CART
+                            </button>
+
+                            {/* Order Now Button */}
+                            <button
+                                onClick={handleOrderNow}
+                                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white text-xs tracking-wide hover:bg-white hover:text-green-600 border-2 border-green-700 transition-all duration-300 font-medium"
+                            >
+                                ORDER NOW
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
 
                         {/* Action Buttons */}
                         <div className="flex gap-4 mb-8">
@@ -217,6 +255,17 @@ export default function Product() {
                     </div>
                 </div>
             </div>
+
+            {/* Order Form Modal */}
+            {showOrderForm && selectedProduct && (
+                <OrderForm
+                    product={selectedProduct}
+                    onClose={() => {
+                        setShowOrderForm(false);
+                        setSelectedProduct(null);
+                    }}
+                />
+            )}
         </div>
     );
 }
