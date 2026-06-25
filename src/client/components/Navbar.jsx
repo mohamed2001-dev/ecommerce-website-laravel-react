@@ -108,7 +108,7 @@ function Navbar() {
                         <img
                             src={logoImage}
                             alt="Medamk"
-                            className="h-35 sm:h-30 md:h-30 w-auto cursor-pointer transition-all duration-300 hover:opacity-80"
+                            className="h-35 max-[640px]:h-20 sm:h-20 md:h-25 w-auto cursor-pointer transition-all duration-300 hover:opacity-80"
                             onClick={() => navigate("/")}
                         />
                     </div>

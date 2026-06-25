@@ -237,8 +237,13 @@ function Home() {
                                         </div>
 
                                         <button
-                                            onClick={() => dispatch(addToCart(product))}
-                                            className="relative group/btn px-6 py-2.5 bg-black text-white text-sm tracking-wide overflow-hidden transition-all duration-300 hover:bg-white hover:text-black border border-black"
+                                            onClick={(e) => {   e.preventDefault();
+                                                                e.stopPropagation();
+                                                                dispatch(addToCart(product));
+                                                                }}
+
+                                            className="relative group/btn px-6 py-2.5 bg-black text-white text-sm tracking-wide
+                                            overflow-hidden transition-all duration-300 hover:bg-white hover:text-black border border-black"
                                         >
                                             <span className="relative z-10">ADD TO CART</span>
                                         </button>

@@ -263,6 +263,7 @@ export default function Product() {
                     onClose={() => {
                         setShowOrderForm(false);
                         setSelectedProduct(null);
+                        navigate('/')
                     }}
                 />
             )}
