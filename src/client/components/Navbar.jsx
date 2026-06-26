@@ -115,7 +115,25 @@ function Navbar() {
 
                     {/* Right Section - Search & Cart */}
                     <div className="flex items-center gap-4">
-
+                        {/* Dashboard / Login Icon */}
+                <Link to="/admin" className="relative group" aria-label="Dashboard Login">
+                    <div className="w-10 h-10 flex items-center justify-center hover:bg-black/5 rounded-full transition-all duration-300">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={1.5}
+                            stroke="currentColor"
+                            className="w-5 h-5 text-black group-hover:scale-105 transition-transform"
+                        >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.25a8.25 8.25 0 0 1 15 0"
+                        />
+                        </svg>
+                        </div>
+                    </Link>
                         {/* DESKTOP SEARCH ICON */}
                         <div className="relative hidden md:block">
                             <button
