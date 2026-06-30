@@ -18,7 +18,7 @@ function Footer() {
                     {/* Brand */}
                     <div>
                         <h2 className="text-2xl font-light tracking-[0.2em] mb-4">
-                            MED<span className="font-bold">AMK</span>
+                            Carisma<span className="font-bold">Perfumes</span>
                         </h2>
                         <p className="text-gray-500 text-sm leading-relaxed">
                             Luxury fragrances crafted for those who appreciate elegance and sophistication.

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { clearCart } from '../../store/slices/cartSlice';
+import { createOrder } from '../../store/slices/orderSlice';
 
 export default function OrderForm({ product , onClose }) {
     const dispatch = useDispatch();
@@ -8,10 +9,11 @@ export default function OrderForm({ product , onClose }) {
     // Determine order items (either single product or cart items)
     const orderItems = product ? [product] : items;
     const total = orderItems.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
-
+    const { error } = useSelector((state) => state.orders);
 
     const [form, setForm] = useState({
         full_name: '',
+        email : '' ,
         phone: '',
         address: '',
         city: '',
@@ -26,15 +28,33 @@ export default function OrderForm({ product , onClose }) {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-        setTimeout(() => {
-            setLoading(false);
-            setSubmitted(true);
-            dispatch(clearCart());
-        }, 1500);
-    };
+    const orderData = {
+    customer_name: form.full_name,
+    customer_email: form.email,
+    customer_phone: form.phone,
+    customer_address: form.address,
+    city: form.city,
+    notes: form.notes,
+    total_price: total,
+    items: orderItems.map((item) => ({
+        product_id: item.id,
+        quantity: item.quantity || 1,
+        price: item.price,
+    })),
+};
+
+    const result = await dispatch(createOrder(orderData));
+
+    if (createOrder.fulfilled.match(result)) {
+        dispatch(clearCart());
+        setSubmitted(true);
+    }
+
+    setLoading(false);
+};
 
     if (submitted) {
         return (
@@ -84,6 +104,15 @@ export default function OrderForm({ product , onClose }) {
                         className="w-full px-4 py-3 border border-gray-200 focus:border-black outline-none text-sm"
                     />
                     <input
+                        type="email"
+                        name="email"
+                        value={form.email}
+                        onChange={handleChange}
+                        required
+                        placeholder="Email Address"
+                        className="w-full px-4 py-3 border border-gray-200 focus:border-black outline-none text-sm"
+                    />
+                    <input
                         type="tel"
                         name="phone"
                         value={form.phone}
@@ -126,6 +155,9 @@ export default function OrderForm({ product , onClose }) {
                         {loading ? 'PROCESSING...' : `Order Now • $${total.toFixed(2)}`}
                     </button>
                 </form>
+                {error && (
+                    <p className="text-red-500 text-xs text-center">{error}</p>
+                )}
             </div>
         </div>
     );

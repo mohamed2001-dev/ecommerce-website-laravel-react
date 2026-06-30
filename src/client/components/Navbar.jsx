@@ -55,7 +55,6 @@ function Navbar() {
         { path: "/", label: "HOME" },
         { path: "/men", label: "MEN" },
         { path: "/women", label: "WOMEN" },
-        { path: "/pack", label: "PACK" },
         { path: "/contact", label: "CONTACT" },
     ];
 

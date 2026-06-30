@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { logout } from '../../store/slices/authSlice';
-import { FaBox, FaTags, FaHome, FaSignOutAlt, FaUser, FaTachometerAlt, FaChevronDown } from 'react-icons/fa';
+import { FaBox, FaTags, FaHome, FaSignOutAlt, FaUser, FaTachometerAlt, FaChevronDown , FaClipboardList } from 'react-icons/fa';
 
 export default function Navbar() {
     const dispatch = useDispatch();
@@ -21,6 +21,7 @@ export default function Navbar() {
         { path: '/admin/products', name: 'Products', icon: FaBox },
         { path: '/admin/categories', name: 'Categories', icon: FaTags },
         { path: '/', name: 'View Site', icon: FaHome },
+        { path: '/admin/orders',     name: 'Orders',    icon: FaClipboardList },
     ];
 
     return (

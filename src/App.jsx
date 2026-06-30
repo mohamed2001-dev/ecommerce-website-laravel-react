@@ -21,6 +21,7 @@ import Pack from "./client/pages/Pack"
 import ProductList from "./admin/pages/products/ProductsList"
 import Shop from "./client/pages/Shop"
 import Product from "./client/pages/Product"
+import Orders from "./admin/pages/Orders"
 
 
 function App() {
@@ -66,6 +67,8 @@ function App() {
                 {/* <Route path="categories/create"       element={<CategoryCreate />} /> */}
                 <Route path="products/create"       element={<ProductCreate />} />
                 <Route path="products/edit/:id"     element={<ProductUpdate />} />
+                {/* ordersList */}
+                <Route path = "orders" element = {<Orders/>} />
             </Route>
 
             {/* 404 */}

@@ -2,221 +2,134 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
-    FaBoxOpen,
-    FaLayerGroup,
-    FaDollarSign,
-    FaChartLine,
-    FaPlus,
-    FaArrowRight,
+    FaBox, FaLayerGroup, FaDollarSign, FaChartLine,
+    FaPlus, FaArrowRight, FaTrophy, FaStar,
 } from "react-icons/fa";
+
+const AVATAR_COLORS = [
+    "bg-blue-100 text-blue-700",
+    "bg-purple-100 text-purple-700",
+    "bg-amber-100 text-amber-700",
+    "bg-green-100 text-green-700",
+    "bg-red-100 text-red-700",
+];
+
+function getInitials(title = "") {
+    return title.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+}
 
 function Dashboard() {
     const { products } = useSelector((state) => state.products);
 
     const stats = useMemo(() => {
-        const safeProducts = products || [];
-
-        const totalProducts = safeProducts.length;
-
-        const totalCategories = new Set(
-            safeProducts
-                .map((product) => product.category?.name)
-                .filter(Boolean)
-        ).size;
-
-        const totalValue = safeProducts.reduce((total, product) => {
-            return total + Number(product.price || 0);
-        }, 0);
-
-        const averagePrice =
-            totalProducts > 0 ? totalValue / totalProducts : 0;
-
-        const mostExpensiveProduct = safeProducts.reduce((max, product) => {
-            return Number(product.price || 0) > Number(max?.price || 0)
-                ? product
-                : max;
-        }, null);
-
-        const recentProducts = [...safeProducts].slice(-5).reverse();
-
-        return {
-            totalProducts,
-            totalCategories,
-            totalValue,
-            averagePrice,
-            mostExpensiveProduct,
-            recentProducts,
-        };
+        const safe = products || [];
+        const totalProducts = safe.length;
+        const totalCategories = new Set(safe.map((p) => p.category?.name).filter(Boolean)).size;
+        const totalValue = safe.reduce((sum, p) => sum + Number(p.price || 0), 0);
+        const averagePrice = totalProducts > 0 ? totalValue / totalProducts : 0;
+        const mostExpensiveProduct = safe.reduce(
+            (max, p) => (Number(p.price || 0) > Number(max?.price || 0) ? p : max), null
+        );
+        const recentProducts = [...safe].slice(-5).reverse();
+        return { totalProducts, totalCategories, totalValue, averagePrice, mostExpensiveProduct, recentProducts };
     }, [products]);
 
     const statCards = [
-        {
-            title: "Total Products",
-            value: stats.totalProducts,
-            icon: <FaBoxOpen />,
-            description: "Products available in your store",
-        },
-        {
-            title: "Categories",
-            value: stats.totalCategories,
-            icon: <FaLayerGroup />,
-            description: "Product categories created",
-        },
-        {
-            title: "Average Price",
-            value: `$${stats.averagePrice.toFixed(2)}`,
-            icon: <FaDollarSign />,
-            description: "Average product price",
-        },
-        {
-            title: "Products Value",
-            value: `$${stats.totalValue.toFixed(2)}`,
-            icon: <FaChartLine />,
-            description: "Total value of all products",
-        },
+        { label: "Total products", value: stats.totalProducts, sub: "Products in store", icon: <FaBox />, color: "bg-blue-100 text-blue-600" },
+        { label: "Categories", value: stats.totalCategories, sub: "Active categories", icon: <FaLayerGroup />, color: "bg-purple-100 text-purple-600" },
+        { label: "Average price", value: `$${stats.averagePrice.toFixed(2)}`, sub: "Per product", icon: <FaDollarSign />, color: "bg-amber-100 text-amber-600" },
+        { label: "Total value", value: `$${stats.totalValue.toFixed(2)}`, sub: "Catalog value", icon: <FaChartLine />, color: "bg-green-100 text-green-600" },
     ];
 
     return (
         <div className="min-h-screen bg-gray-50">
 
-            {/* Top Header */}
-            <div className="bg-white border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                        <div>
-                            <p className="text-xs tracking-[0.25em] text-gray-400 uppercase">
-                                Admin Panel
-                            </p>
-
-                            <h1 className="text-3xl font-light text-black mt-2">
-                                Dashboard
-                            </h1>
-
-                            <p className="text-sm text-gray-400 mt-2">
-                                Manage your products, monitor your store, and update your catalog.
-                            </p>
-                        </div>
-
-                        <Link
-                            to="/admin/products/create"
-                            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-black text-white text-sm tracking-wide border-2 border-black hover:bg-white hover:text-black transition-all duration-300"
-                        >
-                            <FaPlus size={13} />
-                            Add Product
-                        </Link>
+            {/* Top bar */}
+            <div className="bg-white border-b border-gray-200 px-6 py-5">
+                <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl font-medium text-gray-900 mt-1">Dashboard</h1>
+                        <p className="text-sm text-gray-400 mt-1">Manage your catalog and monitor store performance.</p>
                     </div>
+                    <Link
+                        to="/admin/products/create"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors"
+                    >
+                        <FaPlus size={12} /> Add product
+                    </Link>
                 </div>
             </div>
 
-            {/* Dashboard Content */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-7xl mx-auto px-6 py-6">
 
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
-                    {statCards.map((card, index) => (
-                        <div
-                            key={index}
-                            className="bg-white border border-gray-200 p-6 hover:shadow-md transition-all duration-300"
-                        >
+                {/* Stat cards */}
+                <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-5">
+                    {statCards.map((card, i) => (
+                        <div key={i} className="bg-white rounded-xl p-5 border border-gray-100">
                             <div className="flex items-start justify-between">
-                                <div>
-                                    <p className="text-xs tracking-[0.2em] text-gray-400 uppercase">
-                                        {card.title}
-                                    </p>
-
-                                    <h2 className="text-3xl font-light text-black mt-3">
-                                        {card.value}
-                                    </h2>
-                                </div>
-
-                                <div className="w-11 h-11 flex items-center justify-center bg-black text-white text-lg">
+                                <p className="text-[11px] tracking-widest text-gray-400 uppercase">{card.label}</p>
+                                <div className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm ${card.color}`}>
                                     {card.icon}
                                 </div>
                             </div>
-
-                            <p className="text-xs text-gray-400 mt-4">
-                                {card.description}
-                            </p>
+                            <p className="text-3xl font-medium text-gray-900 mt-3 leading-none">{card.value}</p>
+                            <p className="text-xs text-gray-400 mt-2">{card.sub}</p>
                         </div>
                     ))}
                 </div>
 
-                {/* Small Overview Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                {/* Bottom panels */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-                    {/* Most Expensive Product */}
-                    <div className="bg-white border border-gray-200 p-6">
-                        <div className="flex items-center justify-between mb-5">
-                            <h3 className="text-lg font-light text-black">
-                                Top Product
-                            </h3>
-                            <FaDollarSign className="text-gray-300" />
+                    {/* Top product */}
+                    <div className="bg-white border border-gray-100 rounded-xl p-5">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-sm font-medium text-gray-900">Top product</h3>
+                            <FaTrophy className="text-gray-300" size={14} />
                         </div>
-
                         {stats.mostExpensiveProduct ? (
-                            <div>
-                                <p className="text-sm font-medium text-black">
-                                    {stats.mostExpensiveProduct.title}
-                                </p>
-
-                                <p className="text-xs text-gray-400 mt-1">
-                                    {stats.mostExpensiveProduct.category?.name || "Uncategorized"}
-                                </p>
-
-                                <p className="text-2xl font-light text-black mt-4">
+                            <>
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-green-50 text-green-700 mb-3">
+                                    <FaStar size={9} /> Highest price
+                                </span>
+                                <p className="text-sm font-medium text-gray-900">{stats.mostExpensiveProduct.title}</p>
+                                <p className="text-xs text-gray-400 mt-1">{stats.mostExpensiveProduct.category?.name || "Uncategorized"}</p>
+                                <p className="text-3xl font-medium text-gray-900 mt-4">
                                     ${Number(stats.mostExpensiveProduct.price || 0).toFixed(2)}
                                 </p>
-                            </div>
+                            </>
                         ) : (
-                            <p className="text-sm text-gray-400">
-                                No products available yet.
-                            </p>
+                            <p className="text-sm text-gray-400">No products yet.</p>
                         )}
                     </div>
 
-                    {/* Recent Products */}
-                    <div className="bg-white border border-gray-200 p-6 lg:col-span-2">
-                        <div className="flex items-center justify-between mb-5">
-                            <h3 className="text-lg font-light text-black">
-                                Recent Products
-                            </h3>
-
-                            <Link
-                                to="/admin/products/create"
-                                className="text-xs text-black flex items-center gap-2 hover:gap-3 transition-all"
-                            >
-                                Add new
-                                <FaArrowRight size={11} />
+                    {/* Recent products */}
+                    <div className="bg-white border border-gray-100 rounded-xl p-5 lg:col-span-2">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-sm font-medium text-gray-900">Recent products</h3>
+                            <Link to="/admin/products/create" className="text-xs text-blue-600 flex items-center gap-1 hover:gap-1.5 transition-all">
+                                Add new <FaArrowRight size={10} />
                             </Link>
                         </div>
-
                         {stats.recentProducts.length > 0 ? (
-                            <div className="space-y-3">
-                                {stats.recentProducts.map((product) => (
-                                    <div
-                                        key={product.id}
-                                        className="flex items-center justify-between border-b border-gray-100 pb-3 last:border-0 last:pb-0"
-                                    >
-                                        <div>
-                                            <p className="text-sm font-medium text-black">
-                                                {product.title}
-                                            </p>
-
-                                            <p className="text-xs text-gray-400 mt-1">
-                                                {product.category?.name || "Uncategorized"}
-                                            </p>
+                            <div className="divide-y divide-gray-50">
+                                {stats.recentProducts.map((product, i) => (
+                                    <div key={product.id} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0">
+                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium flex-shrink-0 ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}>
+                                            {getInitials(product.title)}
                                         </div>
-
-                                        <p className="text-sm font-semibold text-black">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-900 truncate">{product.title}</p>
+                                            <p className="text-xs text-gray-400 mt-0.5">{product.category?.name || "Uncategorized"}</p>
+                                        </div>
+                                        <p className="text-sm font-medium text-gray-900 flex-shrink-0">
                                             ${Number(product.price || 0).toFixed(2)}
                                         </p>
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <p className="text-sm text-gray-400">
-                                No recent products found.
-                            </p>
+                            <p className="text-sm text-gray-400">No recent products found.</p>
                         )}
                     </div>
                 </div>
